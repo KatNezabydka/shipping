@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Entity;
+namespace Shipping\Tests\Unit\Entity;
 
-use App\Entity\Order;
-use App\Enum\ShippingProviderKeyEnum;
+use Shipping\Entity\Order;
+use Shipping\Enum\ShippingProviderKeyEnum;
 use PHPUnit\Framework\TestCase;
 
 class OrderTest extends TestCase

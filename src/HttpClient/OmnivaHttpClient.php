@@ -2,24 +2,31 @@
 
 declare(strict_types=1);
 
-namespace App\HttpClient;
+namespace Shipping\HttpClient;
 
-use App\DTO\Request\OmnivaFindPickupPointRequest;
-use App\DTO\Request\OmnivaRegisterShippingRequest;
-use App\DTO\Response\OmnivaFindPickupPointResponse;
-use GuzzleHttp\Exception\GuzzleException;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Psr\Log\LoggerInterface;
+use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
+use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
+use Shipping\DTO\Response\OmnivaFindPickupPointResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
 readonly class OmnivaHttpClient extends BaseHttpClient
 {
-    private const string FIND_PICK_UP_URL = 'https://omnivafake.com/pickup/find';
-    private const string SHIPPING_REGISTER_URL = 'https://omnivafake.com/register';
+    private const string FIND_PICK_UP_URL = '/pickup/find';
+    private const string SHIPPING_REGISTER_URL = '/register';
+
+    public function __construct(
+        HttpClientInterface $omnivaClient,
+        LoggerInterface $logger,
+        SerializerInterface $serializer,
+    ) {
+        parent::__construct($omnivaClient, $logger, $serializer);
+    }
 
     /**
-     * @throws ExceptionInterface
      * @throws Throwable
-     * @throws GuzzleException
      */
     public function findPickup(OmnivaFindPickupPointRequest $request): OmnivaFindPickupPointResponse
     {
@@ -37,7 +44,6 @@ readonly class OmnivaHttpClient extends BaseHttpClient
 
     /**
      * @throws Throwable
-     * @throws GuzzleException
      */
     public function registerShipping(OmnivaRegisterShippingRequest $request): bool
     {

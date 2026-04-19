@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shipping\Service;
 
-use App\Entity\Order as OrderEntity;
-use App\ShippingProvider\ShippingProviderStrategyInterface;
+use Shipping\Entity\Order as OrderEntity;
+use Shipping\ShippingProvider\ShippingProviderStrategyInterface;
 
-readonly class Order implements OrderInterface
+readonly class OrderService
 {
     public function __construct(private ShippingProviderStrategyInterface $shippingProviderStrategy)
     {

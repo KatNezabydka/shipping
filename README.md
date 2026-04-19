@@ -15,8 +15,8 @@ Exercise provides a basic framework with Order entity and service, so you could 
 ### Problem
 Please implement a console command which would register a shipment for given shipping provider key. Provider key could be passed as an argument from STDIN. The rest order data could be mocked.
 
-Each shipping provider could deliver the Order (`\App\Entity\Order`), however in the future we might add validation to limit supported providers. Provider is chosen by `\App\Entity\Order::getShippingProviderKey` method which returns provider key: __ups__, __omniva__ or __dhl__.
-Shipment is registered by calling `\App\Service\Order::registerShipping` method, which should ensure a chosen provider is notified about the new shipment.
+Each shipping provider could deliver the Order (`\Shipping\Entity\Order`), however in the future we might add validation to limit supported providers. Provider is chosen by `\Shipping\Entity\Order::getShippingProviderKey` method which returns provider key: __ups__, __omniva__ or __dhl__.
+Shipment is registered by calling `\Shipping\Service\Order::registerShipping` method, which should ensure a chosen provider is notified about the new shipment.
 
 Command should exit if shipment has been registered successfully.
 

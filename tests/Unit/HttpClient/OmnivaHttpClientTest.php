@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\HttpClient;
+namespace Shipping\Tests\Unit\HttpClient;
 
-use App\DTO\Request\OmnivaFindPickupPointRequest;
-use App\DTO\Request\OmnivaRegisterShippingRequest;
-use App\DTO\Response\OmnivaFindPickupPointResponse;
-use App\HttpClient\OmnivaHttpClient;
+use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
+use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
+use Shipping\DTO\Response\OmnivaFindPickupPointResponse;
+use Shipping\HttpClient\OmnivaHttpClient;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

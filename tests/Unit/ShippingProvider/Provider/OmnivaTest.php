@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\ShippingProvider\Provider;
+namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
-use App\DTO\Request\OmnivaFindPickupPointRequest;
-use App\DTO\Request\OmnivaRegisterShippingRequest;
-use App\DTO\Response\OmnivaFindPickupPointResponse;
-use App\Entity\Order as OrderEntity;
-use App\Enum\ShippingProviderKeyEnum;
-use App\HttpClient\OmnivaHttpClient;
-use App\ShippingProvider\Provider\Omniva;
+use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
+use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
+use Shipping\DTO\Response\OmnivaFindPickupPointResponse;
+use Shipping\Entity\Order as OrderEntity;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\HttpClient\OmnivaHttpClient;
+use Shipping\ShippingProvider\Provider\Omniva;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

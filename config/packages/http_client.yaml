@@ -1,0 +1,11 @@
+framework:
+    http_client:
+        scoped_clients:
+            ups.client:
+                base_uri: '%env(UPS_BASE_URI)%'
+
+            dhl.client:
+                base_uri: '%env(DHL_BASE_URI)%'
+
+            omniva.client:
+                base_uri: '%env(OMNIVA_BASE_URI)%'

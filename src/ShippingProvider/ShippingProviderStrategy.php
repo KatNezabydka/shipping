@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\ShippingProvider;
+namespace Shipping\ShippingProvider;
 
-use App\Enum\ShippingProviderKeyEnum;
-use App\ShippingProvider\Provider\ShippingProviderInterface;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\ShippingProvider\Provider\ShippingProviderInterface;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class ShippingProviderStrategy implements ShippingProviderStrategyInterface
 {
+    /** @param iterable<ShippingProviderInterface> $providers */
     public function __construct(
         #[AutowireIterator(ShippingProviderInterface::TAG)]
         private iterable $providers

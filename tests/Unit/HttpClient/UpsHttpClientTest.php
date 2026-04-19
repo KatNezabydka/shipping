@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\HttpClient;
+namespace Shipping\Tests\Unit\HttpClient;
 
-use App\DTO\Request\UpsRegisterShippingRequest;
-use App\HttpClient\UpsHttpClient;
+use Shipping\DTO\Request\UpsRegisterShippingRequest;
+use Shipping\HttpClient\UpsHttpClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\MockObject\MockObject;

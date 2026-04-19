@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\ShippingProvider;
+namespace Shipping\ShippingProvider;
 
-use App\Enum\ShippingProviderKeyEnum;
-use App\ShippingProvider\Provider\ShippingProviderInterface;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\ShippingProvider\Provider\ShippingProviderInterface;
 
 interface ShippingProviderStrategyInterface
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\ShippingProvider\Provider;
+namespace Shipping\ShippingProvider\Provider;
 
-use App\DTO\Request\UpsRegisterShippingRequest;
-use App\Entity\Order;
-use App\Enum\ShippingProviderKeyEnum;
-use App\HttpClient\UpsHttpClient;
+use Shipping\DTO\Request\UpsRegisterShippingRequest;
+use Shipping\Entity\Order;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\HttpClient\UpsHttpClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
@@ -23,7 +23,7 @@ class Ups implements ShippingProviderInterface
 
     public function supports(ShippingProviderKeyEnum $shippingProviderEnum): bool
     {
-        return $shippingProviderEnum->value === ShippingProviderKeyEnum::UPS->value;
+        return $shippingProviderEnum === ShippingProviderKeyEnum::UPS;
     }
 
     public function registerShipment(Order $order): bool

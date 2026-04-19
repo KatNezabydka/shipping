@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\ShippingProvider\Provider;
+namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
-use App\DTO\Request\DhlRegisterShippingRequest;
-use App\Entity\Order as OrderEntity;
-use App\Enum\ShippingProviderKeyEnum;
-use App\ShippingProvider\Provider\Dhl;
-use App\HttpClient\DhlHttpClientInterface;
+use Shipping\DTO\Request\DhlRegisterShippingRequest;
+use Shipping\Entity\Order as OrderEntity;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\ShippingProvider\Provider\Dhl;
+use Shipping\HttpClient\DhlHttpClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Command;
+namespace Shipping\Command;
 
-use App\Entity\Order;
-use App\Enum\ShippingProviderKeyEnum;
-use App\Service\OrderInterface;
+use Shipping\Entity\Order;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\Service\OrderService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 readonly class RegisterShipmentCommand
 {
     public function __construct(
-        private OrderInterface $orderService
+        private OrderService $orderService
     ) {
     }
 

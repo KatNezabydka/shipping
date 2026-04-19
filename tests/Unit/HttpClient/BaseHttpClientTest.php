@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\HttpClient;
+namespace Shipping\Tests\Unit\HttpClient;
 
-use App\HttpClient\BaseHttpClient;
+use Shipping\HttpClient\BaseHttpClient;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

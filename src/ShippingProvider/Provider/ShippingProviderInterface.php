@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\ShippingProvider\Provider;
+namespace Shipping\ShippingProvider\Provider;
 
-use App\Entity\Order;
-use App\Enum\ShippingProviderKeyEnum;
+use Shipping\Entity\Order;
+use Shipping\Enum\ShippingProviderKeyEnum;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag(self::TAG)]

@@ -6,12 +6,9 @@ services:
         autoconfigure: true
         public: false
 
-    App\:
+    Shipping\:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-
-    GuzzleHttp\Client: ~
-    GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shipping\Tests\Unit\Command;
 
-use App\Command\RegisterShipmentCommand;
-use App\Entity\Order;
-use App\Enum\ShippingProviderKeyEnum;
-use App\Service\OrderInterface;
+use Shipping\Command\RegisterShipmentCommand;
+use Shipping\Entity\Order;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\Service\OrderService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -15,13 +15,13 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class RegisterShipmentCommandTest extends TestCase
 {
-    private OrderInterface&MockObject $orderServiceMock;
+    private OrderService&MockObject $orderServiceMock;
 
     private CommandTester $commandTester;
 
     protected function setUp(): void
     {
-        $this->orderServiceMock = $this->createMock(OrderInterface::class);
+        $this->orderServiceMock = $this->createMock(OrderService::class);
 
         $command = new RegisterShipmentCommand($this->orderServiceMock);
 

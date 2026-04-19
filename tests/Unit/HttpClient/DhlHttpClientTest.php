@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\HttpClient;
+namespace Shipping\Tests\Unit\HttpClient;
 
-use App\DTO\Request\DhlRegisterShippingRequest;
-use App\HttpClient\DhlHttpClient;
+use Shipping\DTO\Request\DhlRegisterShippingRequest;
+use Shipping\HttpClient\DhlHttpClient;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

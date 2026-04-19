@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shipping\Tests\Unit\Service;
 
-use App\Entity\Order as OrderEntity;
-use App\Enum\ShippingProviderKeyEnum;
-use App\Service\Order;
-use App\ShippingProvider\Provider\ShippingProviderInterface;
-use App\ShippingProvider\ShippingProviderStrategyInterface;
+use Shipping\Entity\Order as OrderEntity;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\Service\OrderService;
+use Shipping\ShippingProvider\Provider\ShippingProviderInterface;
+use Shipping\ShippingProvider\ShippingProviderStrategyInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class OrderTest extends TestCase
 {
-    private Order $orderService;
+    private OrderService $orderService;
     private ShippingProviderStrategyInterface&MockObject $strategyMock;
 
     protected function setUp(): void
     {
         $this->strategyMock = $this->createMock(ShippingProviderStrategyInterface::class);
-        $this->orderService = new Order($this->strategyMock);
+        $this->orderService = new OrderService($this->strategyMock);
     }
 
     public function testRegisterShippingReturnsTrue(): void

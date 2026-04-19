@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\ShippingProvider\Provider;
+namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
-use App\DTO\Request\UpsRegisterShippingRequest;
-use App\Entity\Order as OrderEntity;
-use App\Enum\ShippingProviderKeyEnum;
-use App\ShippingProvider\Provider\Ups;
-use App\HttpClient\UpsHttpClientInterface;
+use Shipping\DTO\Request\UpsRegisterShippingRequest;
+use Shipping\Entity\Order as OrderEntity;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\ShippingProvider\Provider\Ups;
+use Shipping\HttpClient\UpsHttpClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

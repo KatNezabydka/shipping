@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\ShippingProvider\Provider;
+namespace Shipping\ShippingProvider\Provider;
 
-use App\DTO\Request\OmnivaFindPickupPointRequest;
-use App\DTO\Request\OmnivaRegisterShippingRequest;
-use App\Entity\Order;
-use App\Enum\ShippingProviderKeyEnum;
-use App\HttpClient\OmnivaHttpClient;
+use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
+use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
+use Shipping\Entity\Order;
+use Shipping\Enum\ShippingProviderKeyEnum;
+use Shipping\HttpClient\OmnivaHttpClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
@@ -24,7 +24,7 @@ class Omniva implements ShippingProviderInterface
 
     public function supports(ShippingProviderKeyEnum $shippingProviderEnum): bool
     {
-        return $shippingProviderEnum->value === ShippingProviderKeyEnum::OMNIVA->value;
+        return $shippingProviderEnum === ShippingProviderKeyEnum::OMNIVA;
     }
 
     /**

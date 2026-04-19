@@ -2,19 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\HttpClient;
+namespace Shipping\HttpClient;
 
-use App\DTO\Request\UpsRegisterShippingRequest;
-use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
+use Shipping\DTO\Request\UpsRegisterShippingRequest;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
 readonly class UpsHttpClient extends BaseHttpClient
 {
-    private const string SHIPPING_REGISTER_URL = 'https://upsfake.com/register';
+    private const string SHIPPING_REGISTER_URL = '/register';
+
+    public function __construct(
+        HttpClientInterface $upsClient,
+        LoggerInterface $logger,
+        SerializerInterface $serializer,
+    ) {
+        parent::__construct($upsClient, $logger, $serializer);
+    }
 
     /**
      * @throws Throwable
-     * @throws GuzzleException
      */
     public function registerShipping(UpsRegisterShippingRequest $request): bool
     {

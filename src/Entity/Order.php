@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace Shipping\Entity;
 
-use App\Enum\ShippingProviderKeyEnum;
+use Shipping\Enum\ShippingProviderKeyEnum;
 
 readonly class Order
 {

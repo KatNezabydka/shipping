@@ -2,19 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\HttpClient;
+namespace Shipping\HttpClient;
 
-use App\DTO\Request\DhlRegisterShippingRequest;
-use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
+use Shipping\DTO\Request\DhlRegisterShippingRequest;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
 readonly class DhlHttpClient extends BaseHttpClient
 {
-    private const string SHIPPING_REGISTER_URL = 'https://dhlfake.com/register';
+    private const string SHIPPING_REGISTER_URL = '/register';
+
+    public function __construct(
+        HttpClientInterface $dhlClient,
+        LoggerInterface $logger,
+        SerializerInterface $serializer,
+    ) {
+        parent::__construct($dhlClient, $logger, $serializer);
+    }
 
     /**
      * @throws Throwable
-     * @throws GuzzleException
      */
     public function registerShipping(DhlRegisterShippingRequest $request): bool
     {

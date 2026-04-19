@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\HttpClient;
+namespace Shipping\HttpClient;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Throwable;
 
 readonly abstract class BaseHttpClient
 {
     public function __construct(
-        protected ClientInterface $client,
+        protected HttpClientInterface $client,
         protected LoggerInterface $logger,
         protected SerializerInterface $serializer,
     ) {
@@ -21,7 +21,7 @@ readonly abstract class BaseHttpClient
 
     /**
      * @throws Throwable
-     * @throws GuzzleException
+     * @throws ExceptionInterface
      */
     protected function get(string $url, array $query = []): string
     {
@@ -30,9 +30,9 @@ readonly abstract class BaseHttpClient
                 'query' => $query,
             ]);
 
-            return $response->getBody()->getContents();
+            return $response->getContent();
 
-        } catch (Throwable $error) {
+        } catch (ExceptionInterface|Throwable $error) {
             $this->logger->error('HTTP GET failed', [
                 'url' => $url,
                 'exception' => $error,
@@ -43,8 +43,8 @@ readonly abstract class BaseHttpClient
     }
 
     /**
-     * @throws GuzzleException
      * @throws Throwable
+     * @throws ExceptionInterface
      */
     protected function post(string $url, array $body = []): string
     {
@@ -53,9 +53,9 @@ readonly abstract class BaseHttpClient
                 'json' => $body,
             ]);
 
-            return $response->getBody()->getContents();
+            return $response->getContent();
 
-        } catch (Throwable $error) {
+        } catch (ExceptionInterface|Throwable $error) {
             $this->logger->error('HTTP POST failed', [
                 'url' => $url,
                 'exception' => $error,

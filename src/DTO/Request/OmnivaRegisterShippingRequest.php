@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DTO\Request;
+namespace Shipping\DTO\Request;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 readonly class OmnivaRegisterShippingRequest
