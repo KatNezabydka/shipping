@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
 use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
 use Shipping\DTO\Response\OmnivaFindPickupPointResponse;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
@@ -20,7 +21,7 @@ readonly class OmnivaHttpClient extends BaseHttpClient implements OmnivaHttpClie
     public function __construct(
         HttpClientInterface $omnivaClient,
         LoggerInterface $logger,
-        SerializerInterface $serializer,
+        SerializerInterface&NormalizerInterface $serializer,
     ) {
         parent::__construct($omnivaClient, $logger, $serializer);
     }

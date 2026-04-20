@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shipping\HttpClient;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
@@ -15,7 +16,7 @@ readonly abstract class BaseHttpClient
     public function __construct(
         protected HttpClientInterface $client,
         protected LoggerInterface $logger,
-        protected SerializerInterface $serializer,
+        protected SerializerInterface&NormalizerInterface $serializer,
     ) {
     }
 

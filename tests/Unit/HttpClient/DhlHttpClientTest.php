@@ -11,6 +11,8 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -18,12 +20,15 @@ class DhlHttpClientTest extends TestCase
 {
     private DhlHttpClient $httpClient;
     private HttpClientInterface&MockObject $clientMock;
-    private TestSerializerInterface&MockObject $serializerMock;
+    private SerializerInterface&NormalizerInterface&MockObject $serializerMock;
 
     protected function setUp(): void
     {
         $this->clientMock = $this->createMock(HttpClientInterface::class);
-        $this->serializerMock = $this->createMock(TestSerializerInterface::class);
+
+        /** @var SerializerInterface&NormalizerInterface&MockObject $serializer */
+        $serializer = $this->createMockForIntersectionOfInterfaces([SerializerInterface::class, NormalizerInterface::class]);
+        $this->serializerMock = $serializer;
 
         $this->httpClient = new DhlHttpClient(
             $this->clientMock,

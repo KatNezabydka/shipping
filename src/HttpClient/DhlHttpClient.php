@@ -6,6 +6,7 @@ namespace Shipping\HttpClient;
 
 use Psr\Log\LoggerInterface;
 use Shipping\DTO\Request\DhlRegisterShippingRequest;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
@@ -17,7 +18,7 @@ readonly class DhlHttpClient extends BaseHttpClient implements DhlHttpClientInte
     public function __construct(
         HttpClientInterface $dhlClient,
         LoggerInterface $logger,
-        SerializerInterface $serializer,
+        SerializerInterface&NormalizerInterface $serializer,
     ) {
         parent::__construct($dhlClient, $logger, $serializer);
     }
