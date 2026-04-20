@@ -14,12 +14,4 @@ readonly class OmnivaRegisterShippingRequest
         public string $orderId,
     ) {
     }
-
-    public function toArray(): array
-    {
-        return [
-            'pickup_point_id' => $this->pickupPointId,
-            'order_id' => $this->orderId,
-        ];
-    }
 }

@@ -5,85 +5,69 @@ declare(strict_types=1);
 namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
 use Shipping\DTO\Request\UpsRegisterShippingRequest;
-use Shipping\Entity\Order as OrderEntity;
+use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\ShippingProvider\Provider\Ups;
 use Shipping\HttpClient\UpsHttpClientInterface;
+use Shipping\ShippingProvider\Provider\Ups;
+use Shipping\Tests\DataProvider\ShippingProvider\Provider\UpsDataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Throwable;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class UpsTest extends TestCase
 {
     private UpsHttpClientInterface&MockObject $httpClientMock;
     private LoggerInterface&MockObject $loggerMock;
-    private Ups $upsProvider;
+    private Ups $provider;
 
     protected function setUp(): void
     {
         $this->httpClientMock = $this->createMock(UpsHttpClientInterface::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
-        $this->upsProvider = new Ups($this->httpClientMock, $this->loggerMock);
+        $this->provider = new Ups(
+            $this->httpClientMock,
+            $this->loggerMock,
+            $this->createMock(SerializerInterface::class),
+        );
     }
 
-    public function testSupportsReturnsTrueForUps(): void
+    #[DataProviderExternal(UpsDataProvider::class, 'supportsProvider')]
+    public function testSupports(ShippingProviderKeyEnum $enum, bool $expected): void
     {
-        $this->assertTrue($this->upsProvider->supports(ShippingProviderKeyEnum::UPS));
+        $this->assertSame($expected, $this->provider->supports($enum));
     }
 
-    public function testSupportsReturnsFalseForOther(): void
+    #[DataProviderExternal(UpsDataProvider::class, 'registerShippingProvider')]
+    public function testRegisterShipment(int $orderId, string $street, bool $success): void
     {
-        $this->assertFalse($this->upsProvider->supports(ShippingProviderKeyEnum::DHL));
-    }
-
-    public function testRegisterShipmentCallsHttpClientAndReturnsTrue(): void
-    {
-        $order = new OrderEntity(
-            id: 1,
-            street: 'Street 1',
-            postCode: '1000',
-            city: 'City',
+        $order = new Order(
+            id: $orderId,
+            street: $street,
+            postCode: '2100',
+            city: 'Copenhagen',
             country: 'Denmark',
-            shippingProviderKey: ShippingProviderKeyEnum::UPS
+            shippingProviderKey: ShippingProviderKeyEnum::UPS,
         );
 
-        $requestDto = UpsRegisterShippingRequest::fromOrder($order);
+        if ($success) {
+            $this->httpClientMock->expects($this->once())
+                ->method('registerShipping')
+                ->with($this->equalTo(UpsRegisterShippingRequest::fromOrder($order)));
 
-        $this->httpClientMock->expects($this->once())
-            ->method('registerShippingRequest')
-            ->with($this->callback(fn(UpsRegisterShippingRequest $r) => $r->toArray() === $requestDto->toArray()));
+            $this->assertTrue($this->provider->registerShipment($order));
+        } else {
+            $this->httpClientMock->expects($this->once())
+                ->method('registerShipping')
+                ->willThrowException(new RuntimeException('Network error'));
 
-        $result = $this->upsProvider->registerShipment($order);
+            $this->loggerMock->expects($this->once())
+                ->method('error')
+                ->with('Network error');
 
-        $this->assertTrue($result);
-    }
-
-    public function testRegisterShipmentReturnsFalseOnException(): void
-    {
-        $order = new OrderEntity(
-            id: 2,
-            street: 'Street 2',
-            postCode: '2000',
-            city: 'City2',
-            country: 'Denmark',
-            shippingProviderKey: ShippingProviderKeyEnum::UPS
-        );
-
-        $requestDto = UpsRegisterShippingRequest::fromOrder($order);
-
-        $this->httpClientMock->expects($this->once())
-            ->method('registerShippingRequest')
-            ->with($this->callback(fn(UpsRegisterShippingRequest $r) => $r->toArray() === $requestDto->toArray()))
-            ->willThrowException(new RuntimeException('Network error'));
-
-        $this->loggerMock->expects($this->once())
-            ->method('error')
-            ->with($this->isInstanceOf(Throwable::class));
-
-        $result = $this->upsProvider->registerShipment($order);
-
-        $this->assertFalse($result);
+            $this->assertFalse($this->provider->registerShipment($order));
+        }
     }
 }

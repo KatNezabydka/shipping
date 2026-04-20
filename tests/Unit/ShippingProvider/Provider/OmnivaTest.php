@@ -7,121 +7,79 @@ namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
 use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
 use Shipping\DTO\Response\OmnivaFindPickupPointResponse;
-use Shipping\Entity\Order as OrderEntity;
+use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\HttpClient\OmnivaHttpClient;
+use Shipping\HttpClient\OmnivaHttpClientInterface;
 use Shipping\ShippingProvider\Provider\Omniva;
+use Shipping\Tests\DataProvider\ShippingProvider\Provider\OmnivaDataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Throwable;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class OmnivaTest extends TestCase
 {
-    private OmnivaHttpClient&MockObject $httpClientMock;
+    private OmnivaHttpClientInterface&MockObject $httpClientMock;
     private LoggerInterface&MockObject $loggerMock;
-    private Omniva $omnivaProvider;
+    private Omniva $provider;
 
     protected function setUp(): void
     {
-        $this->httpClientMock = $this->createMock(OmnivaHttpClient::class);
+        $this->httpClientMock = $this->createMock(OmnivaHttpClientInterface::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
-        $this->omnivaProvider = new Omniva($this->httpClientMock, $this->loggerMock);
+        $this->provider = new Omniva(
+            $this->httpClientMock,
+            $this->loggerMock,
+            $this->createMock(SerializerInterface::class),
+        );
     }
 
-    public function testSupportsReturnsTrueForOmniva(): void
+    #[DataProviderExternal(OmnivaDataProvider::class, 'supportsProvider')]
+    public function testSupports(ShippingProviderKeyEnum $enum, bool $expected): void
     {
-        $this->assertTrue($this->omnivaProvider->supports(ShippingProviderKeyEnum::OMNIVA));
+        $this->assertSame($expected, $this->provider->supports($enum));
     }
 
-    public function testSupportsReturnsFalseForOther(): void
-    {
-        $this->assertFalse($this->omnivaProvider->supports(ShippingProviderKeyEnum::UPS));
-    }
-
-    public function testRegisterShipmentReturnsTrueWhenPickupPointFound(): void
-    {
-        $order = new OrderEntity(
-            id: 1,
-            street: 'Street 1',
-            postCode: '1000',
-            city: 'City',
-            country: 'Denmark',
-            shippingProviderKey: ShippingProviderKeyEnum::OMNIVA
+    #[DataProviderExternal(OmnivaDataProvider::class, 'registerShippingProvider')]
+    public function testRegisterShipment(
+        int $orderId,
+        string $country,
+        int $pickupPoint,
+        bool $hasPickupPoint,
+        bool $expectedResult,
+    ): void {
+        $order = new Order(
+            id: $orderId,
+            street: 'Main Street 1',
+            postCode: '2100',
+            city: 'Copenhagen',
+            country: $country,
+            shippingProviderKey: ShippingProviderKeyEnum::OMNIVA,
         );
 
-        $findRequest = OmnivaFindPickupPointRequest::fromOrder($order);
-        $pickupResponse = OmnivaFindPickupPointResponse::fromResponse(['pickupPoint' => 42]);
-        $registerRequest = new OmnivaRegisterShippingRequest(42, 'Denmark');
+        $pickupResponse = new OmnivaFindPickupPointResponse(pickupPoint: $pickupPoint);
 
         $this->httpClientMock->expects($this->once())
             ->method('findPickup')
-            ->with($this->callback(fn(OmnivaFindPickupPointRequest $r) => $r->toArray() === $findRequest->toArray()))
+            ->with($this->equalTo(OmnivaFindPickupPointRequest::fromOrder($order)))
             ->willReturn($pickupResponse);
 
-        $this->httpClientMock->expects($this->once())
-            ->method('registerShipping')
-            ->with($this->callback(fn(OmnivaRegisterShippingRequest $r) => $r->toArray() === $registerRequest->toArray()))
-            ->willReturn(true);
+        if ($hasPickupPoint) {
+            $this->httpClientMock->expects($this->once())
+                ->method('registerShipping')
+                ->with($this->equalTo(new OmnivaRegisterShippingRequest($pickupPoint, $country)))
+                ->willReturn(true);
+        } else {
+            $this->loggerMock->expects($this->once())
+                ->method('error')
+                ->with('Pickup point not found for Omniva');
 
-        $result = $this->omnivaProvider->registerShipment($order);
+            $this->httpClientMock->expects($this->never())
+                ->method('registerShipping');
+        }
 
-        $this->assertTrue($result);
-    }
-
-    public function testRegisterShipmentReturnsFalseWhenNoPickupPoint(): void
-    {
-        $order = new OrderEntity(
-            id: 2,
-            street: 'Street 2',
-            postCode: '2000',
-            city: 'City2',
-            country: 'Denmark',
-            shippingProviderKey: ShippingProviderKeyEnum::OMNIVA
-        );
-
-        $pickupResponse = OmnivaFindPickupPointResponse::fromResponse(['pickupPoint' => 0]);
-        $findRequest = OmnivaFindPickupPointRequest::fromOrder($order);
-
-        $this->httpClientMock->expects($this->once())
-            ->method('findPickup')
-            ->with($this->callback(fn(OmnivaFindPickupPointRequest $r) => $r->toArray() === $findRequest->toArray()))
-            ->willReturn($pickupResponse);
-
-        $this->loggerMock->expects($this->once())
-            ->method('error')
-            ->with('Pickup point not found for Omniva');
-
-        $result = $this->omnivaProvider->registerShipment($order);
-
-        $this->assertFalse($result);
-    }
-
-    public function testRegisterShipmentReturnsFalseOnException(): void
-    {
-        $order = new OrderEntity(
-            id: 3,
-            street: 'Street 3',
-            postCode: '3000',
-            city: 'City3',
-            country: 'Denmark',
-            shippingProviderKey: ShippingProviderKeyEnum::OMNIVA
-        );
-
-        $findRequest = OmnivaFindPickupPointRequest::fromOrder($order);
-
-        $this->httpClientMock->expects($this->once())
-            ->method('findPickup')
-            ->with($this->callback(fn(OmnivaFindPickupPointRequest $r) => $r->toArray() === $findRequest->toArray()))
-            ->willThrowException(new RuntimeException('Network error'));
-
-        $this->loggerMock->expects($this->once())
-            ->method('error')
-            ->with($this->isInstanceOf(Throwable::class));
-
-        $result = $this->omnivaProvider->registerShipment($order);
-
-        $this->assertFalse($result);
+        $this->assertSame($expectedResult, $this->provider->registerShipment($order));
     }
 }

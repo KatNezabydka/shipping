@@ -17,34 +17,4 @@ readonly class Order
         public ShippingProviderKeyEnum $shippingProviderKey = ShippingProviderKeyEnum::UPS,
     ) {
     }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    public function getPostCode(): string
-    {
-        return $this->postCode;
-    }
-
-    public function getCity(): string
-    {
-        return $this->city;
-    }
-
-    public function getCountry(): string
-    {
-        return $this->country;
-    }
-
-    public function getShippingProviderKey(): ShippingProviderKeyEnum
-    {
-        return $this->shippingProviderKey;
-    }
 }

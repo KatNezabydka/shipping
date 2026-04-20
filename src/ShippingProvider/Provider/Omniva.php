@@ -8,7 +8,7 @@ use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
 use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\HttpClient\OmnivaHttpClient;
+use Shipping\HttpClient\OmnivaHttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
@@ -16,7 +16,7 @@ use Throwable;
 class Omniva implements ShippingProviderInterface
 {
     public function __construct(
-        protected OmnivaHttpClient $httpClient,
+        protected OmnivaHttpClientInterface $httpClient,
         protected LoggerInterface $logger,
         protected SerializerInterface $serializer,
     ) {
@@ -44,7 +44,7 @@ class Omniva implements ShippingProviderInterface
 
             $registerShippingRequest = new OmnivaRegisterShippingRequest(
                 $pickupPointResponse->pickupPoint,
-                $order->getCountry(),
+                $order->country,
             );
 
             return $this->httpClient->registerShipping($registerShippingRequest);

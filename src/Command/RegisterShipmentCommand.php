@@ -4,7 +4,7 @@ namespace Shipping\Command;
 
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\Service\OrderService;
+use Shipping\Service\OrderServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 readonly class RegisterShipmentCommand
 {
     public function __construct(
-        private OrderService $orderService
+        private OrderServiceInterface $orderService
     ) {
     }
 

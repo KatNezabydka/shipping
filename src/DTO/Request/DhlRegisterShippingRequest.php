@@ -24,22 +24,11 @@ readonly class DhlRegisterShippingRequest
     public static function fromOrder(Order $order): self
     {
         return new self(
-            orderId: $order->getId(),
-            country: $order->getCountry(),
-            address: $order->getStreet(),
-            town: $order->getCity(),
-            zipCode: $order->getPostCode()
+            orderId: $order->id,
+            country: $order->country,
+            address: $order->street,
+            town: $order->city,
+            zipCode: $order->postCode
         );
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'order_id' => $this->orderId,
-            'country' => $this->country,
-            'address'  => $this->address,
-            'town' => $this->town,
-            'zip_code' => $this->zipCode,
-        ];
     }
 }

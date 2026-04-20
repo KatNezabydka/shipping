@@ -6,56 +6,63 @@ namespace Shipping\Tests\Unit\HttpClient;
 
 use Shipping\DTO\Request\DhlRegisterShippingRequest;
 use Shipping\HttpClient\DhlHttpClient;
-use GuzzleHttp\ClientInterface;
+use Shipping\Tests\DataProvider\HttpClient\DhlHttpClientDataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class DhlHttpClientTest extends TestCase
 {
     private DhlHttpClient $httpClient;
-    private ClientInterface&MockObject $clientMock;
+    private HttpClientInterface&MockObject $clientMock;
+    private TestSerializerInterface&MockObject $serializerMock;
 
     protected function setUp(): void
     {
-        $this->clientMock = $this->createMock(ClientInterface::class);
-        $loggerMock = $this->createMock(LoggerInterface::class);
+        $this->clientMock = $this->createMock(HttpClientInterface::class);
+        $this->serializerMock = $this->createMock(TestSerializerInterface::class);
 
-        $this->httpClient = new DhlHttpClient($this->clientMock, $loggerMock);
+        $this->httpClient = new DhlHttpClient(
+            $this->clientMock,
+            $this->createMock(LoggerInterface::class),
+            $this->serializerMock,
+        );
     }
 
-    public function testRegisterShippingRequestCallsPostWithCorrectData(): void
-    {
-        $orderId = 123;
-        $requestDto = new DhlRegisterShippingRequest(
+    #[DataProviderExternal(DhlHttpClientDataProvider::class, 'registerShippingProvider')]
+    public function testRegisterShippingCallsPostAndReturnsTrue(
+        int $orderId,
+        string $country,
+        string $address,
+        string $town,
+        string $zipCode,
+    ): void {
+        $request = new DhlRegisterShippingRequest(
             orderId: $orderId,
-            country: 'Denmark',
-            address: 'Main Street 1',
-            town: 'Copenhagen',
-            zipCode: '2100'
+            country: $country,
+            address: $address,
+            town: $town,
+            zipCode: $zipCode,
         );
 
-        $expectedPayload = $requestDto->toArray();
+        $normalized = ['order_id' => $orderId, 'country' => $country, 'address' => $address, 'town' => $town, 'zip_code' => $zipCode];
 
-        $streamMock = $this->createMock(StreamInterface::class);
-        $streamMock->method('getContents')->willReturn(json_encode(['ok' => true], JSON_THROW_ON_ERROR));
+        $this->serializerMock->expects($this->once())
+            ->method('normalize')
+            ->with($request)
+            ->willReturn($normalized);
 
         $responseMock = $this->createMock(ResponseInterface::class);
-        $responseMock->method('getBody')->willReturn($streamMock);
+        $responseMock->method('getContent')->willReturn('{}');
 
         $this->clientMock->expects($this->once())
             ->method('request')
-            ->with(
-                'POST',
-                'https://dhlfake.com/register',
-                ['json' => $expectedPayload]
-            )
+            ->with('POST', '/register', ['json' => $normalized])
             ->willReturn($responseMock);
 
-        $result = $this->httpClient->registerShipping($requestDto);
-
-        $this->assertFalse($result);
+        $this->assertTrue($this->httpClient->registerShipping($request));
     }
 }

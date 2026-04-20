@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\Service;
 
-use Shipping\Entity\Order as OrderEntity;
+use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\Service\OrderService;
 use Shipping\ShippingProvider\Provider\ShippingProviderInterface;
 use Shipping\ShippingProvider\ShippingProviderStrategyInterface;
+use Shipping\Tests\DataProvider\Service\OrderDataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -23,53 +25,27 @@ class OrderTest extends TestCase
         $this->orderService = new OrderService($this->strategyMock);
     }
 
-    public function testRegisterShippingReturnsTrue(): void
-    {
-        $orderEntity = new OrderEntity(
+    #[DataProviderExternal(OrderDataProvider::class, 'registerShippingProvider')]
+    public function testRegisterShipping(
+        ShippingProviderKeyEnum $provider,
+        bool $expectedResult,
+    ): void {
+        $order = new Order(
             id: 1,
-            street: '123 Main St',
-            postCode: '12345',
-            city: 'CityName',
-            country: 'CountryName',
-            shippingProviderKey: ShippingProviderKeyEnum::UPS
+            street: 'Main Street 1',
+            postCode: '2100',
+            city: 'Copenhagen',
+            country: 'Denmark',
+            shippingProviderKey: $provider,
         );
 
         $providerMock = $this->createMock(ShippingProviderInterface::class);
-        $providerMock->method('registerShipment')
-            ->with($orderEntity)
-            ->willReturn(true);
+        $providerMock->method('registerShipment')->with($order)->willReturn($expectedResult);
 
         $this->strategyMock->method('getProvider')
-            ->with(ShippingProviderKeyEnum::UPS)
+            ->with($provider)
             ->willReturn($providerMock);
 
-        $result = $this->orderService->registerShipping($orderEntity);
-
-        $this->assertTrue($result);
-    }
-
-    public function testRegisterShippingReturnsFalse(): void
-    {
-        $orderEntity = new OrderEntity(
-            id: 2,
-            street: '456 Other St',
-            postCode: '67890',
-            city: 'OtherCity',
-            country: 'OtherCountry',
-            shippingProviderKey: ShippingProviderKeyEnum::DHL
-        );
-
-        $providerMock = $this->createMock(ShippingProviderInterface::class);
-        $providerMock->method('registerShipment')
-            ->with($orderEntity)
-            ->willReturn(false);
-
-        $this->strategyMock->method('getProvider')
-            ->with(ShippingProviderKeyEnum::DHL)
-            ->willReturn($providerMock);
-
-        $result = $this->orderService->registerShipping($orderEntity);
-
-        $this->assertFalse($result);
+        $this->assertSame($expectedResult, $this->orderService->registerShipping($order));
     }
 }

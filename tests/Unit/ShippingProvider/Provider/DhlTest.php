@@ -5,86 +5,70 @@ declare(strict_types=1);
 namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
 use Shipping\DTO\Request\DhlRegisterShippingRequest;
-use Shipping\Entity\Order as OrderEntity;
+use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\ShippingProvider\Provider\Dhl;
 use Shipping\HttpClient\DhlHttpClientInterface;
+use Shipping\ShippingProvider\Provider\Dhl;
+use Shipping\Tests\DataProvider\ShippingProvider\Provider\DhlDataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Throwable;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class DhlTest extends TestCase
 {
     private DhlHttpClientInterface&MockObject $httpClientMock;
     private LoggerInterface&MockObject $loggerMock;
-    private Dhl $dhlProvider;
+    private Dhl $provider;
 
     protected function setUp(): void
     {
         $this->httpClientMock = $this->createMock(DhlHttpClientInterface::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
-        $this->dhlProvider = new Dhl($this->httpClientMock, $this->loggerMock);
+        $this->provider = new Dhl(
+            $this->httpClientMock,
+            $this->loggerMock,
+            $this->createMock(SerializerInterface::class),
+        );
     }
 
-    public function testSupportsReturnsTrueForDhl(): void
+    #[DataProviderExternal(DhlDataProvider::class, 'supportsProvider')]
+    public function testSupports(ShippingProviderKeyEnum $enum, bool $expected): void
     {
-        $this->assertTrue($this->dhlProvider->supports(ShippingProviderKeyEnum::DHL));
+        $this->assertSame($expected, $this->provider->supports($enum));
     }
 
-    public function testSupportsReturnsFalseForOther(): void
+    #[DataProviderExternal(DhlDataProvider::class, 'registerShippingProvider')]
+    public function testRegisterShipment(int $orderId, string $street, bool $success): void
     {
-        $this->assertFalse($this->dhlProvider->supports(ShippingProviderKeyEnum::UPS));
-    }
-
-    public function testRegisterShipmentCallsHttpClientAndReturnsTrue(): void
-    {
-        $order = new OrderEntity(
-            id: 1,
-            street: 'Street 123',
-            postCode: '12345',
-            city: 'City',
-            country: 'Country',
-            shippingProviderKey: ShippingProviderKeyEnum::DHL
+        $order = new Order(
+            id: $orderId,
+            street: $street,
+            postCode: '2100',
+            city: 'Copenhagen',
+            country: 'Denmark',
+            shippingProviderKey: ShippingProviderKeyEnum::DHL,
         );
 
-        $request = DhlRegisterShippingRequest::fromOrder($order);
+        if ($success) {
+            $this->httpClientMock->expects($this->once())
+                ->method('registerShipping')
+                ->with($this->equalTo(DhlRegisterShippingRequest::fromOrder($order)))
+                ->willReturn(true);
 
-        $this->httpClientMock->expects($this->once())
-            ->method('registerShippingRequest')
-            ->with($this->callback(fn(DhlRegisterShippingRequest $r) => $r->toArray() === $request->toArray()))
-            ->willReturn(true);
+            $this->assertTrue($this->provider->registerShipment($order));
+        } else {
+            $this->httpClientMock->expects($this->once())
+                ->method('registerShipping')
+                ->willThrowException(new RuntimeException('Network error'));
 
-        $result = $this->dhlProvider->registerShipment($order);
+            $this->loggerMock->expects($this->once())
+                ->method('error')
+                ->with('Network error');
 
-        $this->assertTrue($result);
-    }
-
-    public function testRegisterShipmentReturnsFalseOnException(): void
-    {
-        $order = new OrderEntity(
-            id: 2,
-            street: 'Another St',
-            postCode: '67890',
-            city: 'OtherCity',
-            country: 'OtherCountry',
-            shippingProviderKey: ShippingProviderKeyEnum::DHL
-        );
-
-        $request = DhlRegisterShippingRequest::fromOrder($order);
-
-        $this->httpClientMock->expects($this->once())
-            ->method('registerShippingRequest')
-            ->with($this->callback(fn(DhlRegisterShippingRequest $r) => $r->toArray() === $request->toArray()))
-            ->willThrowException(new RuntimeException('Network error'));
-
-        $this->loggerMock->expects($this->once())
-            ->method('error')
-            ->with($this->isInstanceOf(Throwable::class));
-
-        $result = $this->dhlProvider->registerShipment($order);
-
-        $this->assertFalse($result);
+            $this->assertFalse($this->provider->registerShipment($order));
+        }
     }
 }

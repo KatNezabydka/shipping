@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
-readonly class DhlHttpClient extends BaseHttpClient
+readonly class DhlHttpClient extends BaseHttpClient implements DhlHttpClientInterface
 {
     private const string SHIPPING_REGISTER_URL = '/register';
 

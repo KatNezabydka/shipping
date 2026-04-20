@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
-readonly class OmnivaHttpClient extends BaseHttpClient
+readonly class OmnivaHttpClient extends BaseHttpClient implements OmnivaHttpClientInterface
 {
     private const string FIND_PICK_UP_URL = '/pickup/find';
     private const string SHIPPING_REGISTER_URL = '/register';

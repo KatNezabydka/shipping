@@ -7,7 +7,7 @@ namespace Shipping\ShippingProvider\Provider;
 use Shipping\DTO\Request\UpsRegisterShippingRequest;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\HttpClient\UpsHttpClient;
+use Shipping\HttpClient\UpsHttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
@@ -15,7 +15,7 @@ use Throwable;
 class Ups implements ShippingProviderInterface
 {
     public function __construct(
-        protected UpsHttpClient $httpClient,
+        protected UpsHttpClientInterface $httpClient,
         protected LoggerInterface $logger,
         protected SerializerInterface $serializer,
     ) {

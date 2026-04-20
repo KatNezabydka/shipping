@@ -6,61 +6,63 @@ namespace Shipping\Tests\Unit\HttpClient;
 
 use Shipping\DTO\Request\UpsRegisterShippingRequest;
 use Shipping\HttpClient\UpsHttpClient;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
+use Shipping\Tests\DataProvider\HttpClient\UpsHttpClientDataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class UpsHttpClientTest extends TestCase
 {
     private UpsHttpClient $httpClient;
-    private ClientInterface&MockObject $clientMock;
+    private HttpClientInterface&MockObject $clientMock;
+    private TestSerializerInterface&MockObject $serializerMock;
 
     protected function setUp(): void
     {
-        $this->clientMock = $this->createMock(ClientInterface::class);
-        $loggerMock = $this->createMock(LoggerInterface::class);
+        $this->clientMock = $this->createMock(HttpClientInterface::class);
+        $this->serializerMock = $this->createMock(TestSerializerInterface::class);
 
-        $this->httpClient = new UpsHttpClient($this->clientMock, $loggerMock);
+        $this->httpClient = new UpsHttpClient(
+            $this->clientMock,
+            $this->createMock(LoggerInterface::class),
+            $this->serializerMock,
+        );
     }
 
-    /**
-     * @throws \Throwable
-     * @throws GuzzleException
-     * @throws \JsonException
-     */
-    public function testRegisterShippingRequestCallsPostAndReturnsTrue(): void
-    {
-        $requestDto = new UpsRegisterShippingRequest(
-            orderId: 123,
-            country: 'Denmark',
-            street: 'Blegdamsvej 9',
-            city: 'Copenhagen',
-            postCode: '2100'
+    #[DataProviderExternal(UpsHttpClientDataProvider::class, 'registerShippingProvider')]
+    public function testRegisterShippingCallsPostAndReturnsTrue(
+        int $orderId,
+        string $country,
+        string $street,
+        string $city,
+        string $postCode,
+    ): void {
+        $request = new UpsRegisterShippingRequest(
+            orderId: $orderId,
+            country: $country,
+            street: $street,
+            city: $city,
+            postCode: $postCode,
         );
 
-        $jsonData = json_encode(['ok' => true], JSON_THROW_ON_ERROR);
+        $normalized = ['order_id' => $orderId, 'country' => $country, 'street' => $street, 'city' => $city, 'post_code' => $postCode];
 
-        $streamMock = $this->createMock(StreamInterface::class);
-        $streamMock->method('getContents')->willReturn($jsonData);
+        $this->serializerMock->expects($this->once())
+            ->method('normalize')
+            ->with($request)
+            ->willReturn($normalized);
 
         $responseMock = $this->createMock(ResponseInterface::class);
-        $responseMock->method('getBody')->willReturn($streamMock);
+        $responseMock->method('getContent')->willReturn('{}');
 
         $this->clientMock->expects($this->once())
             ->method('request')
-            ->with(
-                'POST',
-                'https://upsfake.com/register',
-                ['json' => $requestDto->toArray()]
-            )
+            ->with('POST', '/register', ['json' => $normalized])
             ->willReturn($responseMock);
 
-        $result = $this->httpClient->registerShipping($requestDto);
-
-        $this->assertTrue($result);
+        $this->assertTrue($this->httpClient->registerShipping($request));
     }
 }

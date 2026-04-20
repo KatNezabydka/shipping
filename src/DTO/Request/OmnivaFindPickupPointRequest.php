@@ -19,8 +19,8 @@ readonly class OmnivaFindPickupPointRequest
     public static function fromOrder(Order $order): self
     {
         return new self(
-            country: $order->getCountry(),
-            postCode: $order->getPostCode(),
+            country: $order->country,
+            postCode: $order->postCode,
         );
     }
 }

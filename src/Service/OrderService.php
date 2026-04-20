@@ -7,7 +7,7 @@ namespace Shipping\Service;
 use Shipping\Entity\Order as OrderEntity;
 use Shipping\ShippingProvider\ShippingProviderStrategyInterface;
 
-readonly class OrderService
+readonly class OrderService implements OrderServiceInterface
 {
     public function __construct(private ShippingProviderStrategyInterface $shippingProviderStrategy)
     {
@@ -15,7 +15,7 @@ readonly class OrderService
 
     public function registerShipping(OrderEntity $order): bool
     {
-        $provider = $this->shippingProviderStrategy->getProvider($order->getShippingProviderKey());
+        $provider = $this->shippingProviderStrategy->getProvider($order->shippingProviderKey);
 
         return $provider->registerShipment($order);
     }

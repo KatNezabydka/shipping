@@ -4,79 +4,50 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\Command;
 
-use Shipping\Command\RegisterShipmentCommand;
-use Shipping\Entity\Order;
-use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\Service\OrderService;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
+use Shipping\Service\OrderServiceInterface;
+use Shipping\Tests\DataProvider\Command\RegisterShipmentCommandDataProvider;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Tester\ApplicationTester;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 
-class RegisterShipmentCommandTest extends TestCase
+class RegisterShipmentCommandTest extends KernelTestCase
 {
-    private OrderService&MockObject $orderServiceMock;
-
-    private CommandTester $commandTester;
+    private Application $application;
+    private OrderServiceInterface $orderServiceMock;
 
     protected function setUp(): void
     {
-        $this->orderServiceMock = $this->createMock(OrderService::class);
+        self::bootKernel();
 
-        $command = new RegisterShipmentCommand($this->orderServiceMock);
+        $this->orderServiceMock = $this->createMock(OrderServiceInterface::class);
+        static::getContainer()->set(OrderServiceInterface::class, $this->orderServiceMock);
 
-        $application = new Application();
-        $application->add($command);
-
-        $this->commandTester = new CommandTester($application->find('app:register-shipment'));
+        $this->application = new Application(self::$kernel);
+        $this->application->setAutoExit(false);
     }
 
-    public function testSuccessfulRegistration(): void
-    {
-        $this->orderServiceMock
-            ->expects($this->once())
-            ->method('registerShipping')
-            ->willReturn(true);
+    #[DataProviderExternal(RegisterShipmentCommandDataProvider::class, 'executeCommandProvider')]
+    public function testExecuteCommand(
+        string $provider,
+        bool $serviceReturnsSuccess,
+        int $expectedStatusCode,
+        string $expectedOutput,
+        int|null $expectedCallCount,
+    ): void {
+        if ($expectedCallCount !== null) {
+            $this->orderServiceMock->expects($this->exactly($expectedCallCount))
+                ->method('registerShipping')
+                ->willReturn($serviceReturnsSuccess);
+        } else {
+            $this->orderServiceMock->expects($this->never())
+                ->method('registerShipping');
+        }
 
-        $this->commandTester->execute([
-            'provider' => 'ups',
-        ]);
+        $tester = new ApplicationTester($this->application);
+        $tester->run(['command' => 'app:register-shipment', 'provider' => $provider]);
 
-        $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('Shipment registered was successfully with provider ups', $output);
-        $this->assertSame(0, $this->commandTester->getStatusCode());
-    }
-
-    public function testFailedRegistration(): void
-    {
-        $this->orderServiceMock
-            ->expects($this->once())
-            ->method('registerShipping')
-            ->willReturn(false);
-
-        $this->commandTester->execute([
-            'provider' => 'dhl',
-        ]);
-
-        $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('Shipment registered was unsuccessfully with provider dhl', $output);
-        $this->assertSame(1, $this->commandTester->getStatusCode());
-    }
-
-    public function testDefaultProviderWhenInvalidPassed(): void
-    {
-        $this->orderServiceMock
-            ->expects($this->once())
-            ->method('registerShipping')
-            ->with($this->callback(fn(Order $order) => $order->getShippingProviderKey() === ShippingProviderKeyEnum::UPS))
-            ->willReturn(true);
-
-        $this->commandTester->execute([
-            'provider' => 'invalid-provider',
-        ]);
-
-        $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('Shipment registered was successfully with provider ups', $output);
-        $this->assertSame(0, $this->commandTester->getStatusCode());
+        $this->assertSame($expectedStatusCode, $tester->getStatusCode());
+        $this->assertStringContainsString($expectedOutput, $tester->getDisplay());
     }
 }

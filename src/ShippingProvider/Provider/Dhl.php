@@ -7,7 +7,7 @@ namespace Shipping\ShippingProvider\Provider;
 use Shipping\DTO\Request\DhlRegisterShippingRequest;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
-use Shipping\HttpClient\DhlHttpClient;
+use Shipping\HttpClient\DhlHttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
@@ -15,7 +15,7 @@ use Throwable;
 class Dhl implements ShippingProviderInterface
 {
     public function __construct(
-        protected DhlHttpClient $httpClient,
+        protected DhlHttpClientInterface $httpClient,
         protected LoggerInterface $logger,
         protected SerializerInterface $serializer,
     ) {
