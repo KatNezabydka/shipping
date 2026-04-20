@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Shipping\ShippingProvider\Provider;
 
+use Psr\Log\LoggerInterface;
 use Shipping\DTO\Request\DhlRegisterShippingRequest;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\HttpClient\DhlHttpClientInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
@@ -23,15 +23,15 @@ class Dhl implements ShippingProviderInterface
 
     public function supports(ShippingProviderKeyEnum $shippingProviderEnum): bool
     {
-        return $shippingProviderEnum === ShippingProviderKeyEnum::DHL;
+        return ShippingProviderKeyEnum::DHL === $shippingProviderEnum;
     }
 
     public function registerShipment(Order $order): bool
     {
         $request = DhlRegisterShippingRequest::fromOrder($order);
+
         try {
             return $this->httpClient->registerShipping($request);
-
         } catch (Throwable $error) {
             $this->logger->error($error->getMessage());
 

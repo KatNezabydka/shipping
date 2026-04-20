@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\Service;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\Service\OrderService;
 use Shipping\ShippingProvider\Provider\ShippingProviderInterface;
 use Shipping\ShippingProvider\ShippingProviderStrategyInterface;
 use Shipping\Tests\DataProvider\Service\OrderDataProvider;
-use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class OrderTest extends TestCase
 {
     private OrderService $orderService;
-    private ShippingProviderStrategyInterface&MockObject $strategyMock;
+    private MockObject&ShippingProviderStrategyInterface $strategyMock;
 
     protected function setUp(): void
     {

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shipping\Command;
 
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\Service\OrderServiceInterface;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Argument;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -17,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 readonly class RegisterShipmentCommand
 {
     public function __construct(
-        private OrderServiceInterface $orderService
+        private OrderServiceInterface $orderService,
     ) {
     }
 
@@ -28,7 +30,7 @@ readonly class RegisterShipmentCommand
     ): int {
         $providerKey = ShippingProviderKeyEnum::tryFrom($provider);
 
-        if ($providerKey === null) {
+        if (null === $providerKey) {
             $output->writeln(
                 sprintf(
                     '<error>Shipment registration failed with provider %s</error>',

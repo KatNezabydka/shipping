@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shipping\ShippingProvider;
 
+use InvalidArgumentException;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\ShippingProvider\Provider\ShippingProviderInterface;
-use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class ShippingProviderStrategy implements ShippingProviderStrategyInterface
@@ -14,7 +14,7 @@ readonly class ShippingProviderStrategy implements ShippingProviderStrategyInter
     /** @param iterable<ShippingProviderInterface> $providers */
     public function __construct(
         #[AutowireIterator(ShippingProviderInterface::TAG)]
-        private iterable $providers
+        private iterable $providers,
     ) {
     }
 
@@ -26,11 +26,6 @@ readonly class ShippingProviderStrategy implements ShippingProviderStrategyInter
             }
         }
 
-        throw new InvalidArgumentException(
-            sprintf(
-                'No provider found for type: %s',
-                $shippingProviderEnum->value
-            )
-        );
+        throw new InvalidArgumentException(sprintf('No provider found for type: %s', $shippingProviderEnum->value));
     }
 }

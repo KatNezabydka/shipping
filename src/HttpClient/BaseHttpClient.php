@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 use UnexpectedValueException;
 
-readonly abstract class BaseHttpClient
+abstract readonly class BaseHttpClient
 {
     public function __construct(
         protected HttpClientInterface $client,
@@ -34,7 +34,6 @@ readonly abstract class BaseHttpClient
             ]);
 
             return $response->getContent();
-
         } catch (Throwable $error) {
             $this->logger->error('HTTP GET failed', [
                 'url' => $url,
@@ -58,7 +57,6 @@ readonly abstract class BaseHttpClient
             ]);
 
             return $response->getContent();
-
         } catch (Throwable $error) {
             $this->logger->error('HTTP POST failed', [
                 'url' => $url,
@@ -71,6 +69,7 @@ readonly abstract class BaseHttpClient
 
     /**
      * @return array<string, mixed>
+     *
      * @throws ExceptionInterface
      */
     protected function normalizeRequest(object $request): array

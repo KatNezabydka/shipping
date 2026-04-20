@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\Command;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\MockObject\MockObject;
 use Shipping\Service\OrderServiceInterface;
 use Shipping\Tests\DataProvider\Command\RegisterShipmentCommandDataProvider;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\ApplicationTester;
-use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class RegisterShipmentCommandTest extends KernelTestCase
 {
     private Application $application;
-    private OrderServiceInterface&MockObject $orderServiceMock;
+    private MockObject&OrderServiceInterface $orderServiceMock;
 
     protected function setUp(): void
     {
@@ -34,9 +39,9 @@ class RegisterShipmentCommandTest extends KernelTestCase
         bool $serviceReturnsSuccess,
         int $expectedStatusCode,
         string $expectedOutput,
-        int|null $expectedCallCount,
+        ?int $expectedCallCount,
     ): void {
-        if ($expectedCallCount !== null) {
+        if (null !== $expectedCallCount) {
             $this->orderServiceMock->expects($this->exactly($expectedCallCount))
                 ->method('registerShipping')
                 ->willReturn($serviceReturnsSuccess);

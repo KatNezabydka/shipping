@@ -39,6 +39,7 @@ In the root directory:
 2. Run `docker compose exec app composer install`
 3. Run `docker compose exec app bin/phpunit`
 4. Run `docker compose exec app composer phpstan`
+5. Run `docker compose exec app composer cs-fix`
 
 ## Run a command with ups, dhl, omniva:
 Run `docker compose exec app bin/console app:register-shipment ups`

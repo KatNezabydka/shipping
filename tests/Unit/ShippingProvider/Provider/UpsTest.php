@@ -4,22 +4,27 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shipping\DTO\Request\UpsRegisterShippingRequest;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\HttpClient\UpsHttpClientInterface;
 use Shipping\ShippingProvider\Provider\Ups;
 use Shipping\Tests\DataProvider\ShippingProvider\Provider\UpsDataProvider;
-use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class UpsTest extends TestCase
 {
-    private UpsHttpClientInterface&MockObject $httpClientMock;
+    private MockObject&UpsHttpClientInterface $httpClientMock;
     private LoggerInterface&MockObject $loggerMock;
     private Ups $provider;
 

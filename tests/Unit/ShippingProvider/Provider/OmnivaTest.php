@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
 use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
 use Shipping\DTO\Response\OmnivaFindPickupPointResponse;
@@ -12,16 +16,16 @@ use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\HttpClient\OmnivaHttpClientInterface;
 use Shipping\ShippingProvider\Provider\Omniva;
 use Shipping\Tests\DataProvider\ShippingProvider\Provider\OmnivaDataProvider;
-use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class OmnivaTest extends TestCase
 {
-    private OmnivaHttpClientInterface&MockObject $httpClientMock;
+    private MockObject&OmnivaHttpClientInterface $httpClientMock;
     private LoggerInterface&MockObject $loggerMock;
     private Omniva $provider;
 

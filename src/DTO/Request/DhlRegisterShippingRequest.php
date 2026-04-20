@@ -19,7 +19,8 @@ readonly class DhlRegisterShippingRequest
         public string $town,
         #[SerializedName('zip_code')]
         public string $zipCode,
-    ) {}
+    ) {
+    }
 
     public static function fromOrder(Order $order): self
     {

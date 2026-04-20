@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\ShippingProvider\Provider;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shipping\DTO\Request\DhlRegisterShippingRequest;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\HttpClient\DhlHttpClientInterface;
 use Shipping\ShippingProvider\Provider\Dhl;
 use Shipping\Tests\DataProvider\ShippingProvider\Provider\DhlDataProvider;
-use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class DhlTest extends TestCase
 {
     private DhlHttpClientInterface&MockObject $httpClientMock;

@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface ShippingProviderInterface
 {
     public const string TAG = 'strategy.shipping_provider';
+
     public function supports(ShippingProviderKeyEnum $shippingProviderEnum): bool;
 
     public function registerShipment(Order $order): bool;

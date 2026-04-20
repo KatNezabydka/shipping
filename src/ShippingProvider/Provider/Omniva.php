@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shipping\ShippingProvider\Provider;
 
+use Psr\Log\LoggerInterface;
 use Shipping\DTO\Request\OmnivaFindPickupPointRequest;
 use Shipping\DTO\Request\OmnivaRegisterShippingRequest;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\HttpClient\OmnivaHttpClientInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
@@ -24,7 +24,7 @@ class Omniva implements ShippingProviderInterface
 
     public function supports(ShippingProviderKeyEnum $shippingProviderEnum): bool
     {
-        return $shippingProviderEnum === ShippingProviderKeyEnum::OMNIVA;
+        return ShippingProviderKeyEnum::OMNIVA === $shippingProviderEnum;
     }
 
     /**

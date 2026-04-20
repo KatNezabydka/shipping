@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Shipping\Tests\Unit\Entity;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\TestCase;
 use Shipping\Entity\Order;
 use Shipping\Enum\ShippingProviderKeyEnum;
 use Shipping\Tests\DataProvider\Entity\OrderDataProvider;
-use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class OrderTest extends TestCase
 {
     public function testDefaultShippingProviderIsUps(): void
