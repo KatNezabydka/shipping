@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Shipping\HttpClient;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Throwable;
+use UnexpectedValueException;
 
 readonly abstract class BaseHttpClient
 {
@@ -21,8 +22,9 @@ readonly abstract class BaseHttpClient
     }
 
     /**
+     * @param array<string, mixed> $query
+     *
      * @throws Throwable
-     * @throws ExceptionInterface
      */
     protected function get(string $url, array $query = []): string
     {
@@ -33,7 +35,7 @@ readonly abstract class BaseHttpClient
 
             return $response->getContent();
 
-        } catch (ExceptionInterface|Throwable $error) {
+        } catch (Throwable $error) {
             $this->logger->error('HTTP GET failed', [
                 'url' => $url,
                 'exception' => $error,
@@ -44,8 +46,9 @@ readonly abstract class BaseHttpClient
     }
 
     /**
+     * @param array<string, mixed> $body
+     *
      * @throws Throwable
-     * @throws ExceptionInterface
      */
     protected function post(string $url, array $body = []): string
     {
@@ -56,7 +59,7 @@ readonly abstract class BaseHttpClient
 
             return $response->getContent();
 
-        } catch (ExceptionInterface|Throwable $error) {
+        } catch (Throwable $error) {
             $this->logger->error('HTTP POST failed', [
                 'url' => $url,
                 'exception' => $error,
@@ -64,5 +67,20 @@ readonly abstract class BaseHttpClient
 
             throw $error;
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     * @throws ExceptionInterface
+     */
+    protected function normalizeRequest(object $request): array
+    {
+        $data = $this->serializer->normalize($request);
+
+        if (!is_array($data)) {
+            throw new UnexpectedValueException('Expected normalized request to be an array.');
+        }
+
+        return $data;
     }
 }

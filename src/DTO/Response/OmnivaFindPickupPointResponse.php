@@ -11,13 +11,6 @@ readonly class OmnivaFindPickupPointResponse
     ) {
     }
 
-    public static function fromResponse(array $response): self
-    {
-        return new self(
-            pickupPoint: $response['pickupPoint'],
-        );
-    }
-
     public function hasPickupPoint(): bool
     {
         return !empty($this->pickupPoint);

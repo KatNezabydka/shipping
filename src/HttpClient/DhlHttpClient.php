@@ -30,7 +30,7 @@ readonly class DhlHttpClient extends BaseHttpClient implements DhlHttpClientInte
     {
         $this->post(
             self::SHIPPING_REGISTER_URL,
-            $this->serializer->normalize($request)
+            $this->normalizeRequest($request)
         );
 
         return true;

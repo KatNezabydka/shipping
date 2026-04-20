@@ -6,6 +6,9 @@ namespace Shipping\Tests\DataProvider\HttpClient;
 
 final class OmnivaHttpClientDataProvider
 {
+    /**
+     * @return array<string, array{string, string, int}>
+     */
     public static function findPickupProvider(): array
     {
         return [
@@ -15,6 +18,9 @@ final class OmnivaHttpClientDataProvider
         ];
     }
 
+    /**
+     * @return array<string, array{int, string}>
+     */
     public static function registerShippingProvider(): array
     {
         return [

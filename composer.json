@@ -29,7 +29,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "symfony/flex": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "phpstan/extension-installer": true
         }
     },
     "autoload": {
@@ -57,7 +58,8 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "phpstan": "phpstan analyse"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -69,6 +71,10 @@
         }
     },
     "require-dev": {
+        "phpstan/extension-installer": "*",
+        "phpstan/phpstan": "*",
+        "phpstan/phpstan-phpunit": "*",
+        "phpstan/phpstan-symfony": "*",
         "phpunit/phpunit": "^10.0",
         "symfony/phpunit-bridge": "^7.0"
     }

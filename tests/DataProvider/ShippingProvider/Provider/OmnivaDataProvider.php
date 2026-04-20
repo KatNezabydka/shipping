@@ -8,6 +8,9 @@ use Shipping\Enum\ShippingProviderKeyEnum;
 
 final class OmnivaDataProvider
 {
+    /**
+     * @return array<string, array{ShippingProviderKeyEnum, bool}>
+     */
     public static function supportsProvider(): array
     {
         return [
@@ -17,6 +20,9 @@ final class OmnivaDataProvider
         ];
     }
 
+    /**
+     * @return array<string, array{int, string, int, bool, bool}>
+     */
     public static function registerShippingProvider(): array
     {
         return [

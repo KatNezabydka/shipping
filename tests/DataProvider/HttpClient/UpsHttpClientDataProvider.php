@@ -6,6 +6,9 @@ namespace Shipping\Tests\DataProvider\HttpClient;
 
 final class UpsHttpClientDataProvider
 {
+    /**
+     * @return array<string, array{int, string, string, string, string}>
+     */
     public static function registerShippingProvider(): array
     {
         return [

@@ -33,9 +33,13 @@ We will evaluate code based on these criteria:
 - System flexibility and extensibility
 
 
-# How to test application:
+# How to test an application:
 In the root directory:
 1. Run `docker compose up -d`
 2. Run `docker compose exec app composer install`
 3. Run `docker compose exec app bin/phpunit`
+4. Run `docker compose exec app composer phpstan`
+
+## Run a command with ups, dhl, omniva:
+Run `docker compose exec app bin/console app:register-shipment ups`
 

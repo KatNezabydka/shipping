@@ -8,6 +8,9 @@ use Shipping\Enum\ShippingProviderKeyEnum;
 
 final class OrderDataProvider
 {
+    /**
+     * @return array<string, array{ShippingProviderKeyEnum, bool}>
+     */
     public static function registerShippingProvider(): array
     {
         return [

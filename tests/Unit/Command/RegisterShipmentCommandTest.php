@@ -10,20 +10,21 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\ApplicationTester;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class RegisterShipmentCommandTest extends KernelTestCase
 {
     private Application $application;
-    private OrderServiceInterface $orderServiceMock;
+    private OrderServiceInterface&MockObject $orderServiceMock;
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        $kernel = self::bootKernel();
 
         $this->orderServiceMock = $this->createMock(OrderServiceInterface::class);
         static::getContainer()->set(OrderServiceInterface::class, $this->orderServiceMock);
 
-        $this->application = new Application(self::$kernel);
+        $this->application = new Application($kernel);
         $this->application->setAutoExit(false);
     }
 

@@ -33,7 +33,7 @@ readonly class OmnivaHttpClient extends BaseHttpClient implements OmnivaHttpClie
     {
         $json = $this->get(
             self::FIND_PICK_UP_URL,
-            $this->serializer->normalize($request)
+            $this->normalizeRequest($request)
         );
 
         return $this->serializer->deserialize(
@@ -50,7 +50,7 @@ readonly class OmnivaHttpClient extends BaseHttpClient implements OmnivaHttpClie
     {
         $this->post(
             self::SHIPPING_REGISTER_URL,
-            $this->serializer->normalize($request)
+            $this->normalizeRequest($request)
         );
 
         return true;

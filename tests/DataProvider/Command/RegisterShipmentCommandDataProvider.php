@@ -6,6 +6,9 @@ namespace Shipping\Tests\DataProvider\Command;
 
 final class RegisterShipmentCommandDataProvider
 {
+    /**
+     * @return array<string, array{string, bool, int, string, int|null}>
+     */
     public static function executeCommandProvider(): array
     {
         return [
